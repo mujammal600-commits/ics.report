@@ -19,22 +19,15 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Generate Wrapper if missing
-      run: |
-        if [ ! -f "gradlew" ]; then
-          echo "Gradlew missing, generating..."
-          gradle wrapper
-        fi
-
-    - name: Make Gradlew Executable
-      run: chmod +x gradlew
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon
+      run: gradle assembleDebug --continue
 
-    - name: Upload APK Artifact
+    - name: Find and Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: ics-cyber-report-app
-        path: "**/build/outputs/apk/debug/*.apk"
+        path: "**/outputs/apk/debug/*.apk"
         
