@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#07111F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ICS Report Pro">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>ICS Cyber Report Pro • Detect • Document • Report</title>
+  <style>
+    :root {
+      --bg: #060D17;
+      --card-bg: #0F1E33;
+      --card-border: #1E3553;
+      --navy-surface: #0A1320;
+      --cyan: #00E5FF;
+      --blue: #2563EB;
+      --accent: #38BDF8;
+      --text: #F1F5F9;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+      --critical: #EF4444;
+      --high: #F97316;
+      --medium: #EAB308;
+      --low: #10B981;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hind Siliguri", sans-serif;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.5;
+      padding-bottom: 70px;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(6, 13, 23, 0.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      color: #000;
+      font-weight: 900;
+      font-size: 14px;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 14px rgba(0, 229, 255, 0.3);
+    }
+    .brand h1 { margin: 0; font-size: 16px; font-weight: 800; color: #fff; }
+    .brand p { margin: 0; font-size: 10px; color: var(--accent); }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 9px 13px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: linear-gradient(135deg, var(--blue), #0284c7); border: none; color: #fff; }
+    .btn-cyan { background: rgba(0, 229, 255, 0.15); color: var(--cyan); border-color: rgba(0, 229, 255, 0.4); }
+    .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--critical); border-color: rgba(239, 68, 68, 0.4); }
+    .btn-sm { padding: 5px 9px; font-size: 11px; border-radius: 8px; }
+
+    /* Views */
+    .view { display: none; padding: 14px; max-width: 900px; margin: 0 auto; }
+    .view.active { display: block; }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .hero {
+      background: linear-gradient(145deg, #0e1e35, #081525);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-critical { background: rgba(239,68,68,0.2); color: var(--critical); border: 1px solid rgba(239,68,68,0.4); }
+    .badge-high { background: rgba(249,115,22,0.2); color: var(--high); border: 1px solid rgba(249,115,22,0.4); }
+    .badge-medium { background: rgba(234,179,8,0.2); color: var(--medium); border: 1px solid rgba(234,179,8,0.4); }
+    .badge-low { background: rgba(16,185,129,0.2); color: var(--low); border: 1px solid rgba(16,185,129,0.4); }
+    .badge-status { background: rgba(56,189,248,0.15); color: var(--accent); border: 1px solid rgba(56,189,248,0.4); }
+
+    /* Form Fields */
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 5px; }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      background: #091626;
+      color: #fff;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 11px 12px;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--cyan); }
+    .field textarea { min-height: 100px; resize: vertical; }
+    .row { display: flex; gap: 10px; }
+    .row > div { flex: 1; }
+
+    /* Stats Grid */
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+    .stat-tile { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 10px 8px; text-align: center; }
+    .stat-tile strong { display: block; font-size: 20px; font-weight: 900; color: var(--cyan); }
+    .stat-tile span { font-size: 10px; color: var(--text-muted); }
+
+    /* Nav Tiles */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
+    .nav-tile {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .nav-tile:active { background: #132742; }
+    .nav-tile .tile-icon { font-size: 22px; }
+    .nav-tile b { display: block; font-size: 13px; color: #fff; }
+    .nav-tile small { font-size: 10px; color: var(--text-muted); }
+
+    /* Notice Box */
+    .notice {
+      background: rgba(12, 32, 53, 0.7);
+      border: 1px solid #1E3B5C;
+      border-radius: 12px;
+      padding: 11px;
+      font-size: 11px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* Cases List */
+    .case-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 13px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .case-card:hover { border-color: rgba(0, 229, 255, 0.5); }
+    .case-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+
+    /* Evidence Preview */
+    .ev-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .ev-thumb {
+      width: 70px;
+      height: 70px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--card-border);
+    }
+
+    /* Report Print / Text */
+    .report-box {
+      background: #050b14;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      max-height: 480px;
+      overflow-y: auto;
+    }
+
+    /* Bottom Navigation Bar */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(6, 13, 23, 0.98);
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 0;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      padding: 4px 10px;
+    }
+    .nav-btn.active { color: var(--cyan); font-weight: 700; }
+    .nav-btn .icon { font-size: 18px; }
+
+    /* Security PIN Screen */
+    #lock-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: var(--bg);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 260px; margin-top: 20px; }
+    .key-btn {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      font-size: 22px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+    .key-btn:active { background: var(--blue); }
+
+    @media (max-width: 600px) {
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .row { flex-direction: column; gap: 0; }
+    }
+
+    @media print {
+      header, nav.bottom-nav, .no-print { display: none !important; }
+      body { background: #fff !important; color: #000 !important; }
+      .report-box { border: none; color: #000; background: #fff; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">ICS</div>
+      <div>
+        <h1>ICS Cyber Report Pro</h1>
+        <p id="lbl-tagline">Detect • Document • Report</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-sm btn-cyan" onclick="toggleLang()" id="btn-lang">🇧🇩 বাংলা</button>
+      <button class="btn btn-sm" onclick="showView('settings')">⚙️</button>
+    </div>
+  </header>
+
+  <!-- Lock Screen Overlay -->
+  <div id="lock-screen">
+    <div style="font-size: 44px; margin-bottom: 12px;">🛡️</div>
+    <h2 style="margin: 0; color: #fff;">ICS Cyber Report Pro</h2>
+    <p style="color: var(--accent); font-size: 13px; margin: 4px 0 20px;" id="lbl-lock-msg">সুরক্ষিত ভল্টে প্রবেশের জন্য পিন দিন</p>
+    <div style="display: flex; gap: 14px; margin-bottom: 20px;" id="pin-dots">
+      <div style="width:14px;height:14px;border-radius:50%;border:1px solid var(--cyan)"></div>
+      <div style="width:14px;height:14px;border-radius:50%;border:1px solid var(--cyan)"></div>
+      <div style="width:14px;height:14px;border-radius:50%;border:1px solid var(--cyan)"></div>
+      <div style="width:14px;height:14px;border-radius:50%;border:1px solid var(--cyan)"></div>
+    </div>
+    <div class="keypad">
+      <div class="key-btn" onclick="enterPin('1')">1</div>
+      <div class="key-btn" onclick="enterPin('2')">2</div>
+      <div class="key-btn" onclick="enterPin('3')">3</div>
+      <div class="key-btn" onclick="enterPin('4')">4</div>
+      <div class="key-btn" onclick="enterPin('5')">5</div>
+      <div class="key-btn" onclick="enterPin('6')">6</div>
+      <div class="key-btn" onclick="enterPin('7')">7</div>
+      <div class="key-btn" onclick="enterPin('8')">8</div>
+      <div class="key-btn" onclick="enterPin('9')">9</div>
+      <div></div>
+      <div class="key-btn" onclick="enterPin('0')">0</div>
+      <div class="key-btn" onclick="clearPin()">⌫</div>
+    </div>
+  </div>
+
+  <!-- VIEW: DASHBOARD (HOME) -->
+  <main id="view-dashboard" class="view active">
+    <div class="hero">
+      <h2 style="margin:0 0 6px; font-size: 20px; color: #fff;">ICS Cyber Report Pro</h2>
+      <p style="margin:0 0 14px; color: var(--accent); font-size: 12px;" id="lbl-hero-desc">প্রফেশনাল সাইবার ইনসিডেন্ট ও রিপোর্ট ম্যানেজমেন্ট অ্যাসিস্ট্যান্ট</p>
+      <button class="btn btn-primary" style="width: 100%;" onclick="openNewCase()">
+        <span>＋</span> <b id="lbl-btn-new">নতুন রিপোর্ট তৈরি করুন (New Report)</b>
+      </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid-4">
+      <div class="stat-tile"><strong id="stat-total">0</strong><span id="lbl-st-total">মোট কেস</span></div>
+      <div class="stat-tile"><strong id="stat-open" style="color:var(--accent)">0</strong><span id="lbl-st-open">চলমান</span></div>
+      <div class="stat-tile"><strong id="stat-ready" style="color:var(--high)">0</strong><span id="lbl-st-ready">প্রস্তুত</span></div>
+      <div class="stat-tile"><strong id="stat-resolved" style="color:var(--low)">0</strong><span id="lbl-st-resolved">নিষ্পত্তি</span></div>
+    </div>
+
+    <!-- Navigation Hub -->
+    <div class="grid-2">
+      <div class="nav-tile" onclick="showView('cases')">
+        <span class="tile-icon">📋</span>
+        <div><b id="lbl-tile-cases">আমার কেসসমূহ</b><small>অনুসন্ধান ও ব্যবস্থাপনা</small></div>
+      </div>
+      <div class="nav-tile" onclick="showView('vault')">
+        <span class="tile-icon">📸</span>
+        <div><b id="lbl-tile-vault">এভিডেন্স ভল্ট</b><small>স্ক্রিনশট ও প্রমাণ</small></div>
+      </div>
+      <div class="nav-tile" onclick="showView('official')">
+        <span class="tile-icon">🔗</span>
+        <div><b id="lbl-tile-portals">অফিশিয়াল রিপোর্ট</b><small>প্ল্যাটফর্ম হেল্পডেস্ক</small></div>
+      </div>
+      <div class="nav-tile" onclick="showView('backup')">
+        <span class="tile-icon">💾</span>
+        <div><b id="lbl-tile-backup">ব্যাকআপ ও রিস্টোর</b><small>JSON এক্সপোর্ট/ইমপোর্ট</small></div>
+      </div>
+    </div>
+
+    <!-- Notice -->
+    <div class="notice">
+      ⚠️ <b id="lbl-notice-title">নিরপেক্ষতা ঘোষণা:</b> <span id="lbl-notice-body">ICS Pro কোনো অভিযোগকে নিজে থেকে সত্য বলে ধরে নেয় না। এটি বৈধ প্রমাণ সাজিয়ে উপযুক্ত অফিশিয়াল হেল্পডেস্ক ও আইনি কর্তৃপক্ষের কাছে পেশ করার জন্য রিপোর্ট তৈরি করে। কোনো ভুয়া বা স্প্যাম অভিযোগ করবেন না।</span>
+    </div>
+
+    <!-- Recent Cases Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin: 16px 0 10px;">
+      <h3 style="margin:0; font-size:14px; color:#fff;" id="lbl-recent-title">সাম্প্রতিক কেসসমূহ</h3>
+      <a href="javascript:void(0)" onclick="showView('cases')" style="color:var(--cyan); font-size:12px; text-decoration:none;" id="lbl-view-all">সব দেখুন →</a>
+    </div>
+    <div id="recent-cases-list"></div>
+  </main>
+
+  <!-- VIEW: NEW REPORT -->
+  <section id="view-new" class="view">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0; color:#fff;" id="lbl-create-case-title">🎯 নতুন কেস তৈরি করুন</h3>
+        <span class="badge badge-status" id="lbl-new-id">ICS-2026-00001</span>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label id="lbl-f-platform">প্ল্যাটফর্ম (Platform)</label>
+          <select id="new-platform">
+            <option>Facebook</option><option>Instagram</option><option>WhatsApp</option>
+            <option>YouTube</option><option>TikTok</option><option>X (Twitter)</option>
+            <option>Telegram</option><option>LinkedIn</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label id="lbl-f-priority">অগ্রাধিকার (Priority)</label>
+          <select id="new-priority">
+            <option value="Critical">🔴 Critical (জরুরি)</option>
+            <option value="High" selected>🟠 High (উচ্চ)</option>
+            <option value="Medium">🟡 Medium (মাঝারি)</option>
+            <option value="Low">🟢 Low (সাধারণ)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label id="lbl-f-url">টার্গেট ইউআরএল / প্রোফাইল লিংক *</label>
+        <input id="new-url" placeholder="https://facebook.com/fake.profile... or username">
+      </div>
+
+      <div class="field">
+        <label id="lbl-f-cat">রিপোর্ট ক্যাটাগরি (Report Category - 20 Categories)</label>
+        <select id="new-cat" onchange="updateCatGuidance()"></select>
+        <div id="cat-guidance" style="margin-top:6px; font-size:11px; color:var(--accent);"></div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label id="lbl-f-date">ঘটনার তারিখ (Incident Date)</label>
+          <input type="date" id="new-date">
+        </div>
+        <div class="field">
+          <label id="lbl-f-followup">ফলো-আপ শিডিউল (Follow-up)</label>
+          <input type="date" id="new-followup">
+        </div>
+      </div>
+
+      <div class="field">
+        <label id="lbl-f-desc">ঘটনার বিস্তারিত বিবরণ (Description) *</label>
+        <textarea id="new-desc" placeholder="কার সাথে কী ঘটেছে, কী ক্ষতি হয়েছে বা কী বার্তা দেওয়া হয়েছে বিস্তারিত লিখুন..."></textarea>
+      </div>
+
+      <div class="field">
+        <label id="lbl-f-ev">📸 স্ক্রিনশট ও প্রমাণপত্র (Screenshots / Media)</label>
+        <input type="file" id="new-files" accept="image/*" multiple onchange="handleNewFiles(event)">
+        <div id="new-ev-previews" class="ev-previews"></div>
+      </div>
+
+      <!-- Smart Analyzer Output Container -->
+      <div id="analyzer-box" style="margin-top: 10px;"></div>
+
+      <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="saveNewCase()">💾 <span id="lbl-btn-save-case">কেস সংরক্ষণ করুন</span></button>
+        <button class="btn btn-cyan" onclick="runAnalyzer()">🔎 <span id="lbl-btn-analyze">প্রমাণ বিশ্লেষণ (Analyze)</span></button>
+        <button class="btn" onclick="showView('dashboard')"><span id="lbl-btn-cancel">বাতিল</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW: CASES LIST -->
+  <section id="view-cases" class="view">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0; color:#fff;" id="lbl-my-cases-title">📋 আমার কেসসমূহ</h3>
+        <button class="btn btn-sm btn-primary" onclick="openNewCase()">＋ <span id="lbl-btn-new-sm">নতুন</span></button>
+      </div>
+      <div class="field">
+        <input id="case-search" placeholder="Search Case ID, URL, Category..." oninput="renderCasesList()">
+      </div>
+      <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px;" id="status-filter-pills"></div>
+      <div id="cases-container"></div>
+    </div>
+  </section>
+
+  <!-- VIEW: CASE DETAIL -->
+  <section id="view-detail" class="view">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+        <div>
+          <span class="badge badge-status" id="dt-id">ICS-2026-00001</span>
+          <h3 style="margin:6px 0 2px; color:#fff;" id="dt-cat">Category</h3>
+          <small style="color:var(--accent);" id="dt-platform">Facebook</small>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <span class="badge" id="dt-priority">High</span>
+          <span class="badge badge-status" id="dt-status">Draft</span>
+        </div>
+      </div>
+
+      <div style="background:#091626; border:1px solid var(--card-border); border-radius:10px; padding:10px; margin-bottom:12px;">
+        <div style="color:var(--text-muted); font-size:11px;">TARGET URL</div>
+        <a id="dt-url" href="#" target="_blank" style="color:var(--cyan); word-break:break-all; font-weight:600;"></a>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <h4 style="margin:0 0 4px; color:var(--cyan); font-size:13px;" id="lbl-dt-desc-title">ঘটনার বিবরণ</h4>
+        <div id="dt-desc" style="white-space:pre-wrap; color:#cbd5e1; font-size:13px; line-height:1.6;"></div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h4 style="margin:0; color:var(--cyan); font-size:13px;" id="lbl-dt-ev-title">সংরক্ষিত প্রমাণাদি (Evidence Vault)</h4>
+          <input type="file" id="add-more-ev" accept="image/*" multiple style="display:none;" onchange="handleAddMoreFiles(event)">
+          <button class="btn btn-sm btn-cyan" onclick="document.getElementById('add-more-ev').click()">＋ প্রমাণ যোগ</button>
+        </div>
+        <div id="dt-ev-list" class="ev-previews"></div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <h4 style="margin:0 0 6px; color:var(--cyan); font-size:13px;" id="lbl-dt-timeline-title">ঘটনার সময়ক্রম (Timeline)</h4>
+        <div id="dt-timeline"></div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; border-top:1px solid var(--card-border); padding-top:12px;">
+        <button class="btn btn-primary" onclick="generateReportForCase()">📄 <span id="lbl-btn-gen-rep">রিপোর্ট তৈরি করুন</span></button>
+        <button class="btn btn-cyan" onclick="openPlatformOfficial()">🔗 <span id="lbl-btn-off-help">অফিশিয়াল রিপোর্ট হেল্প</span></button>
+        <button class="btn" onclick="cycleStatus()">🔄 <span id="lbl-btn-change-st">স্ট্যাটাস পরিবর্তন</span></button>
+        <button class="btn btn-danger" onclick="deleteCurrentCase()">🗑️ <span id="lbl-btn-del-case">মুছে ফেলুন</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW: REPORT GENERATOR -->
+  <section id="view-report" class="view">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0; color:#fff;" id="lbl-rep-title">📄 প্রফেশনাল রিপোর্ট জেনারেটর</h3>
+        <div style="display:flex; gap:4px;">
+          <button class="btn btn-sm btn-cyan" id="tab-bn-rep" onclick="switchReportTab('bn')">বাংলা রিপোর্ট 🇧🇩</button>
+          <button class="btn btn-sm" id="tab-en-rep" onclick="switchReportTab('en')">English Report 🇬🇧</button>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-bottom:12px;" class="no-print">
+        <button class="btn btn-primary" onclick="window.print()">🖨️ <span id="lbl-btn-print">প্রিন্ট / সেভ PDF</span></button>
+        <button class="btn" onclick="copyReport()">📋 <span id="lbl-btn-copy">কপি করুন</span></button>
+        <button class="btn" onclick="shareReport()">📤 <span id="lbl-btn-share">শেয়ার</span></button>
+      </div>
+
+      <div id="report-content" class="report-box"></div>
+    </div>
+  </section>
+
+  <!-- VIEW: EVIDENCE VAULT -->
+  <section id="view-vault" class="view">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0; color:#fff;" id="lbl-vault-title">📸 এভিডেন্স ভল্ট (Evidence Vault)</h3>
+        <span class="badge badge-status" id="vault-count">0 Items</span>
+      </div>
+      <div id="vault-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:10px;"></div>
+    </div>
+  </section>
+
+  <!-- VIEW: OFFICIAL REPORTING -->
+  <section id="view-official" class="view">
+    <div class="card">
+      <h3 style="margin:0 0 6px; color:#fff;" id="lbl-off-title">🔗 অফিশিয়াল রিপোর্টিং সেন্টার</h3>
+      <p style="color:var(--text-muted); font-size:12px; margin-bottom:14px;" id="lbl-off-desc">প্ল্যাটফর্ম সমূহের অফিশিয়াল নীতি অনুযায়ী প্রমাণ সহ অভিযোগ দাখিলের সরাসরি সংযোগ।</p>
+      <div id="official-list"></div>
+    </div>
+  </section>
+
+  <!-- VIEW: BACKUP & RESTORE -->
+  <section id="view-backup" class="view">
+    <div class="card">
+      <h3 style="margin:0 0 8px; color:#fff;" id="lbl-bkp-title">💾 ব্যাকআপ ও রিস্টোর</h3>
+      <p style="color:var(--text-muted); font-size:12px; margin-bottom:14px;">সমস্ত কেস, প্রমাণ এবং টাইমলাইন নিরাপদে JSON ফাইলে এক্সপোর্ট বা রিস্টোর করুন।</p>
+      <div style="display:flex; gap:10px; flex-direction:column;">
+        <button class="btn btn-primary" onclick="exportBackup()">⬇️ <span id="lbl-btn-bkp-export">ব্যাকআপ ডাউনলোড করুন (Export JSON)</span></button>
+        <label class="btn" style="text-align:center;">
+          ⬆️ <span id="lbl-btn-bkp-import">ব্যাকআপ রিস্টোর করুন (Import JSON)</span>
+          <input type="file" accept=".json" style="display:none;" onchange="importBackup(event)">
+        </label>
+        <button class="btn btn-danger" onclick="wipeData()">🗑️ <span id="lbl-btn-bkp-wipe">সমস্ত লোকাল ডাটা মুছুন (Wipe All)</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW: SETTINGS -->
+  <section id="view-settings" class="view">
+    <div class="card">
+      <h3 style="margin:0 0 12px; color:#fff;" id="lbl-set-title">⚙️ সেটিংস ও নিরাপত্তা</h3>
+      <div class="field">
+        <label id="lbl-set-pin">৪-সংখ্যার সিকিউরিটি পিন লক (PIN Security)</label>
+        <div style="display:flex; gap:8px;">
+          <input type="password" id="cfg-pin" maxlength="4" placeholder="Enter 4 digits" style="max-width:140px;">
+          <button class="btn btn-cyan" onclick="savePin()">সংরক্ষণ</button>
+          <button class="btn btn-danger" onclick="removePin()">পিন সরান</button>
+        </div>
+      </div>
+      <div class="notice" style="margin-top:14px;">
+        <b>ICS Cyber Report Pro v1.0 (PWA)</b><br>
+        Client-side secure architecture with local storage. No remote tracking. Service Worker enabled for full offline functionality.
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="showView('dashboard')" id="nav-dashboard">
+      <span class="icon">📊</span><span id="nav-lbl-home">হোম</span>
+    </button>
+    <button class="nav-btn" onclick="openNewCase()" id="nav-new">
+      <span class="icon">🎯</span><span id="nav-lbl-new">নতুন</span>
+    </button>
+    <button class="nav-btn" onclick="showView('cases')" id="nav-cases">
+      <span class="icon">📋</span><span id="nav-lbl-cases">কেস</span>
+    </button>
+    <button class="nav-btn" onclick="showView('vault')" id="nav-vault">
+      <span class="icon">📸</span><span id="nav-lbl-vault">ভল্ট</span>
+    </button>
+    <button class="nav-btn" onclick="showView('official')" id="nav-official">
+      <span class="icon">🔗</span><span id="nav-lbl-portals">পোর্টাল</span>
+    </button>
+  </nav>
+
+  <script>
+    // 20 Standard Categories
+    const CATEGORIES = [
+      { id: "impersonation", icon: "🚫", nameEn: "Impersonation / Fake Identity", nameBn: "ছদ্মবেশ / ফেক পরিচয়", guidanceBn: "আসল ব্যক্তির এনআইডি/প্রোফাইল এবং ভুয়া অ্যাকাউন্টের তুলনামূলক স্ক্রিনশট ও ইউআরএল সংরক্ষণ করুন।" },
+      { id: "harassment", icon: "😡", nameEn: "Harassment / Bullying", nameBn: "হয়রানি / সাইবার বুলিং", guidanceBn: "ব্লক করার আগেই পুরো কথোপকথন, তারিখ, সময় ও প্রেরকের আইডি সহ আন-এডিটেড স্ক্রিনশট রাখুন।" },
+      { id: "scam", icon: "💰", nameEn: "Scam / Fraud", nameBn: "প্রতারণা / স্ক্যাম", guidanceBn: "লেনদেন নম্বর (বিকাশ/নগদ/ব্যাংক), ট্রানজেকশন আইডি এবং প্রতারকের কথোপকথনের স্ক্রিনশট নিন।" },
+      { id: "hacked", icon: "🔓", nameEn: "Hacked / Compromised Account", nameBn: "হ্যাকড / বেদখল অ্যাকাউন্ট", guidanceBn: "অ্যাকাউন্টে ঢোকার নোটিফিকেশন, সিকিউরিটি ইমেইল ও পাসওয়ার্ড পরিবর্তনের তারিখ সংরক্ষণ করুন।" },
+      { id: "sexual_nudity", icon: "🔞", nameEn: "Sexual / Nudity / 18+ Content", nameBn: "যৌন / ১৮+ আপত্তিকর কনটেন্ট", guidanceBn: "কনটেন্টের পোস্ট ইউআরএল এবং প্রকাশের তারিখ-সময় দ্রুত সংরক্ষণ করুন।" },
+      { id: "spam", icon: "📨", nameEn: "Spam", nameBn: "স্প্যাম ও বিভ্রান্তিকর বার্তা", guidanceBn: "অযাচিত বার্তার লিংক, প্রেরকের তালিকা ও স্প্যামিংয়ের সময়ের রেকর্ড রাখুন।" },
+      { id: "threat_violence", icon: "⚠️", nameEn: "Threat / Violence", nameBn: "হুমকি / সহিংসতা", guidanceBn: "জীবননাশের হুমকি বা শারীরিক ক্ষতির স্পষ্ট প্রমাণ রাখুন এবং দ্রুত নিকটস্থ থানায় জিডি করুন।" },
+      { id: "privacy_violation", icon: "🕵️", nameEn: "Privacy Violation", nameBn: "ব্যক্তিগত গোপনীয়তা লঙ্ঘন", guidanceBn: "ফোন নম্বর, ঠিকানা, এনআইডি বা ব্যক্তিগত তথ্যের অননুমোদিত প্রকাশের লিঙ্ক ও স্ক্রিনশট রাখুন।" },
+      { id: "non_consensual_media", icon: "📷", nameEn: "Non-consensual Image/Video", nameBn: "সম্মতিহীন ছবি বা ভিডিও ছড়ানো", guidanceBn: "যেসব পেজ, গ্রুপ বা ক্লাউড স্টোরেজে ছড়ানো হচ্ছে তার লিংক এবং সংশ্লিষ্ট পোস্ট দ্রুত নোট করুন।" },
+      { id: "fake_profile", icon: "👤", nameEn: "Fake Profile / Fake Page", nameBn: "ভুয়া প্রোফাইল / ভুয়া পেজ", guidanceBn: "আইডির ইউজারনেম, প্রোফাইল ইউআইডি এবং কপি করা পোস্টগুলোর প্রমাণ সংগ্রহ করুন।" },
+      { id: "copyright_ip", icon: "©️", nameEn: "Copyright / Intellectual Property", nameBn: "কপিরাইট / মেধাস্বত্ব লঙ্ঘন", guidanceBn: "আপনার মূল কন্টেন্টের কপিরাইট প্রমাণ বা প্রথম প্রকাশের তারিখ ও লিংক প্রস্তুত রাখুন।" },
+      { id: "trademark_brand", icon: "™️", nameEn: "Trademark / Brand Impersonation", nameBn: "ট্রেডমার্ক / ব্র্যান্ড নকল", guidanceBn: "অফিসিয়াল ট্রেডমার্ক সনদ এবং ভুয়া ব্র্যান্ড দ্বারা গ্রাহকদের বিভ্রান্ত করার প্রমাণ দিন।" },
+      { id: "phishing", icon: "🎣", nameEn: "Phishing / Malicious Link", nameBn: "ফিশিং / ক্ষতিকর লিংক", guidanceBn: "ফিশিং ডোমেইনের পূর্ণ লিংক (যেমন: fake-facebook.xyz) এবং এসএমএস/ইমেইল হেডার সংরক্ষণ করুন।" },
+      { id: "financial_scam", icon: "💳", nameEn: "Financial Scam", nameBn: "আর্থিক প্রতারণা ও ডিজিটাল জালিয়াতি", guidanceBn: "ব্যাংক স্টেটমেন্ট, এমএফএস ট্রানজেকশন স্টেটমেন্ট ও অর্থ পাঠানোর প্রমাণের কপি রাখুন।" },
+      { id: "misinformation", icon: "📰", nameEn: "False / Misleading Information", nameBn: "গুজব / বিভ্রান্তিকর তথ্য", guidanceBn: "ফ্যাক্ট-চেক তথ্যসূত্র এবং এডিটেড ছবি/ভিডিওর আসল উৎস তুলনামূলকভাবে সংরক্ষণ করুন।" },
+      { id: "child_safety", icon: "🧒", nameEn: "Child Safety Concern", nameBn: "শিশু নিরাপত্তা বিষয়ক", guidanceBn: "সর্বোচ্চ জরুরি। অবিলম্বে লিংক ও তথ্য সংগ্রহ করে পুলিশের সাইবার হেল্পলাইনে যোগাযোগ করুন।" },
+      { id: "extortion_blackmail", icon: "🛑", nameEn: "Extortion / Blackmail", nameBn: "চাঁদাবাজি / ব্ল্যাকমেইল", guidanceBn: "কোনো বার্তা মুছবেন না। চাঁদার দাবি, ভয়েস রেকর্ড, হুমকি ও সময়সীমার স্পষ্ট প্রমাণ রাখুন।" },
+      { id: "abusive_hateful", icon: "📢", nameEn: "Abusive / Hateful Content", nameBn: "ঘৃণাসূচক / আপত্তিকর বক্তব্য", guidanceBn: "উস্কানিমূলক বা বিদ্বেষমূলক বক্তব্যের পোস্টের লিংক এবং স্ক্রিনশট প্রমাণ রাখুন।" },
+      { id: "malicious_site", icon: "🔗", nameEn: "Malicious Website / Link", nameBn: "ক্ষতিকর ওয়েবসাইট বা ম্যালওয়্যার লিংক", guidanceBn: "ম্যালওয়্যার ছড়ানোর লিংক ও ভুয়া ওয়েবসাইটের পূর্ণ বিবরণ নোট করুন।" },
+      { id: "other", icon: "❓", nameEn: "Other", nameBn: "অন্যান্য সাইবার অপরাধ", guidanceBn: "উপরে উল্লেখিত ছাড়া অন্য যেকোনো সাইবার সমস্যার বিস্তারিত তথ্য ও প্রমাণ লিপিবদ্ধ করুন।" }
+    ];
+
+    const OFFICIAL_PORTALS = [
+      { name: "Facebook", emoji: "📘", url: "https://www.facebook.com/help/report/", descBn: "মেটা ফেসবুকের ভুয়া অ্যাকাউন্ট, হয়রানি ও সাইবার অপরাধ সংক্রান্ত অফিশিয়াল রিপোর্ট সেন্টার।" },
+      { name: "Instagram", emoji: "📸", url: "https://help.instagram.com/contact/636276399721841", descBn: "ইনস্টাগ্রাম অ্যাকাউন্ট হ্যাক, ছদ্মবেশ ও হয়রানি সংক্রান্ত অফিশিয়াল রিপোর্ট।" },
+      { name: "WhatsApp", emoji: "💬", url: "https://www.whatsapp.com/contact/", descBn: "হোয়াটসঅ্যাপে প্রতারণা, চাঁদাবাজি বা ক্ষতিকর নম্বর রিপোর্ট ও ব্লক করার প্রক্রিয়া।" },
+      { name: "YouTube", emoji: "▶️", url: "https://support.google.com/youtube/answer/2802027", descBn: "ইউটিউবে আপত্তিকর বা মানহানিকর ভিডিও অপসারণ ও কপিরাইট স্ট্রাইকের অফিশিয়াল আবেদন।" },
+      { name: "TikTok", emoji: "🎵", url: "https://support.tiktok.com/en/safety-hc/account-and-user-safety/report-a-problem", descBn: "টিকটকে ভুয়া একাউন্ট বা বুলিং কনটেন্ট রিপোর্ট করার অফিশিয়াল সাহায্য।" },
+      { name: "X (Twitter)", emoji: "🐦", url: "https://help.x.com/en/safety-and-security/report-abusive-behavior", descBn: "এক্স (টুইটার)-এ ভুয়া অ্যাকাউন্ট, অপপ্রচার ও হয়রানি রিপোর্টের লিংক।" },
+      { name: "Bangladesh Cyber Police / CID", emoji: "🇧🇩", url: "https://cid.police.gov.bd", descBn: "বাংলাদেশ পুলিশ সিআইডি সাইবার পুলিশ সেন্টার (CID), হেল্পলাইন: 13219 / 01769691522, জরুরি: 999।" }
+    ];
+
+    // Local Storage Data
+    let cases = JSON.parse(localStorage.getItem("ics_cases_pwa") || "[]");
+    let currentCaseId = null;
+    let newImages = [];
+    let isBn = localStorage.getItem("ics_lang") !== "en";
+    let reportTab = "bn";
+    let enteredPinStr = "";
+
+    // Initialize Categories Select
+    const catSelect = document.getElementById("new-cat");
+    CATEGORIES.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = `${c.icon} ${isBn ? c.nameBn : c.nameEn}`;
+      catSelect.appendChild(opt);
+    });
+
+    function updateCatGuidance() {
+      const cat = CATEGORIES.find(c => c.id === catSelect.value) || CATEGORIES[0];
+      document.getElementById("cat-guidance").textContent = `💡 ${cat.guidanceBn}`;
+    }
+    updateCatGuidance();
+
+    // Navigation & Views
+    function showView(viewId) {
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      const target = document.getElementById(`view-${viewId}`);
+      if (target) target.classList.add("active");
+
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      const navBtn = document.getElementById(`nav-${viewId}`);
+      if (navBtn) navBtn.classList.add("active");
+
+      if (viewId === "dashboard") renderDashboard();
+      if (viewId === "cases") renderCasesList();
+      if (viewId === "vault") renderVault();
+      if (viewId === "official") renderOfficial();
+      window.scrollTo(0,0);
+    }
+
+    function openNewCase() {
+      const seq = cases.length + 1;
+      const nextId = `ICS-${new Date().getFullYear()}-${String(seq).padStart(5, '0')}`;
+      document.getElementById("lbl-new-id").textContent = nextId;
+      document.getElementById("new-url").value = "";
+      document.getElementById("new-desc").value = "";
+      document.getElementById("new-date").value = new Date().toISOString().split("T")[0];
+      document.getElementById("new-followup").value = "";
+      newImages = [];
+      document.getElementById("new-ev-previews").innerHTML = "";
+      document.getElementById("analyzer-box").innerHTML = "";
+      showView("new");
+    }
+
+    // Handle File Uploads
+    function handleNewFiles(event) {
+      const files = [...event.target.files];
+      files.forEach(f => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          newImages.push({ name: f.name, data: reader.result, time: Date.now() });
+          renderNewPreviews();
+        };
+        reader.readAsDataURL(f);
+      });
+    }
+
+    function renderNewPreviews() {
+      const container = document.getElementById("new-ev-previews");
+      container.innerHTML = newImages.map((img, i) => `
+        <div style="position:relative;display:inline-block;">
+          <img src="${img.data}" class="ev-thumb">
+          <button style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.7);color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:10px;" onclick="newImages.splice(${i},1);renderNewPreviews();">✕</button>
+        </div>
+      `).join("");
+    }
+
+    // Smart Evidence Analyzer
+    function runAnalyzer() {
+      const url = document.getElementById("new-url").value.trim();
+      const desc = document.getElementById("new-desc").value.trim();
+      const imgsCount = newImages.length;
+      let score = 20;
+      let found = [];
+      let missing = [];
+      let guidance = [];
+
+      if (url.startsWith("http://") || url.startsWith("https://")) {
+        score += 25; found.push("সঠিক টার্গেট লিংক (Valid Target URL)");
+      } else if (url) {
+        score += 15; found.push("টার্গেট আইডি পাওয়া গেছে");
+        guidance.push("পূর্ণাঙ্গ https:// লিংক যুক্ত করুন");
+      } else {
+        missing.push("টার্গেট ইউআরএল অনুপস্থিত");
+        guidance.push("অভিযুক্ত অ্যাকাউন্ট বা পোস্টের সরাসরি লিংক দিন");
+      }
+
+      if (desc.length > 50) {
+        score += 30; found.push(`ঘটনার বিবরণ সম্পন্ন (${desc.length} অক্ষর)`);
+      } else if (desc.length > 15) {
+        score += 15; found.push("প্রাথমিক বিবরণ যুক্ত");
+        guidance.push("ঘটনার আরও বিস্তারিত ও আর্থিক ক্ষতির পরিমাণ লিখুন");
+      } else {
+        missing.push("স্পষ্ট বিবরণ অনুপস্থিত");
+        guidance.push("কার সাথে কী ঘটেছে স্পষ্ট লিখুন");
+      }
+
+      if (imgsCount > 0) {
+        score += 25; found.push(`প্রমাণপত্র ও স্ক্রিনশট যুক্ত (${imgsCount}টি)`);
+      } else {
+        missing.push("কোনো স্ক্রিনশট যুক্ত করা হয়নি");
+        guidance.push("প্রোফাইল বা মেসেজের আন-এডিটেড স্ক্রিনশট আপলোড করুন");
+      }
+
+      score = Math.min(100, score);
+      const strength = score >= 80 ? "Solid (সম্পূর্ণ)" : score >= 60 ? "Strong (শক্তিশালী)" : score >= 40 ? "Moderate (মাঝারি)" : "Weak (দুর্বল)";
+
+      document.getElementById("analyzer-box").innerHTML = `
+        <div class="card" style="border-color: rgba(0,229,255,0.4); background: #071526;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+            <b style="color:var(--cyan)">স্মার্ট এভিডেন্স অ্যানালাইজার ফলাফল</b>
+            <span style="color:#fff; font-weight:700;">প্রস্তুতি: ${score}% • ${strength}</span>
+          </div>
+          <div style="background:#132742; height:6px; border-radius:3px; overflow:hidden; margin-bottom:8px;">
+            <div style="background:var(--cyan); width:${score}%; height:100%;"></div>
+          </div>
+          <div style="font-size:11px;">
+            ${found.map(f => `<div style="color:var(--low)">✅ ${f}</div>`).join("")}
+            ${missing.map(m => `<div style="color:var(--high)">⚠️ ${m}</div>`).join("")}
+            ${guidance.map(g => `<div style="color:var(--text-muted)">→ ${g}</div>`).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    // Save Case
+    function saveNewCase() {
+      const url = document.getElementById("new-url").value.trim();
+      if (!url) return alert(isBn ? "টার্গেট ইউআরএল প্রদান করা আবশ্যক!" : "Target URL is required!");
+
+      const caseObj = {
+        id: document.getElementById("lbl-new-id").textContent,
+        platform: document.getElementById("new-platform").value,
+        priority: document.getElementById("new-priority").value,
+        category: document.getElementById("new-cat").value,
+        url: url,
+        date: document.getElementById("new-date").value,
+        followup: document.getElementById("new-followup").value,
+        description: document.getElementById("new-desc").value.trim(),
+        status: "Draft",
+        created: Date.now(),
+        images: [...newImages],
+        timeline: [
+          { date: new Date().toLocaleDateString(), title: "Case created in ICS Pro", desc: "Initial documentation logged." }
+        ]
+      };
+
+      cases.unshift(caseObj);
+      saveStore();
+      openCaseDetail(caseObj.id);
+    }
+
+    function saveStore() {
+      localStorage.setItem("ics_cases_pwa", JSON.stringify(cases));
+      renderDashboard();
+    }
+
+    // Render Dashboard
+    function renderDashboard() {
+      document.getElementById("stat-total").textContent = cases.length;
+      document.getElementById("stat-open").textContent = cases.filter(c => !["Resolved", "Closed"].includes(c.status)).length;
+      document.getElementById("stat-ready").textContent = cases.filter(c => c.status === "Ready to Report").length;
+      document.getElementById("stat-resolved").textContent = cases.filter(c => c.status === "Resolved").length;
+
+      const recentBox = document.getElementById("recent-cases-list");
+      if (!cases.length) {
+        recentBox.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-dim);">কোনো কেস এখনো সংরক্ষণ করা হয়নি।</div>`;
+        return;
+      }
+      recentBox.innerHTML = cases.slice(0, 4).map(c => renderCaseCardHtml(c)).join("");
+    }
+
+    function renderCaseCardHtml(c) {
+      const cat = CATEGORIES.find(k => k.id === c.category) || CATEGORIES[0];
+      const pClass = c.priority.toLowerCase();
+      return `
+        <div class="case-card" onclick="openCaseDetail('${c.id}')">
+          <div class="case-header">
+            <b>${cat.icon} ${c.id}</b>
+            <span class="badge badge-${pClass}">${c.priority}</span>
+          </div>
+          <div style="color:var(--accent); font-size:12px; margin-bottom:4px;">${c.platform} • ${isBn ? cat.nameBn : cat.nameEn}</div>
+          <div style="color:var(--text-muted); font-size:11px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${c.url}</div>
+          <div style="display:flex; justify-content:space-between; margin-top:8px; align-items:center;">
+            <span class="badge badge-status">${c.status}</span>
+            <small style="color:var(--text-dim);">${c.date || ""}</small>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCasesList() {
+      const q = (document.getElementById("case-search").value || "").toLowerCase();
+      const filtered = cases.filter(c => JSON.stringify(c).toLowerCase().includes(q));
+      const box = document.getElementById("cases-container");
+      box.innerHTML = filtered.length ? filtered.map(c => renderCaseCardHtml(c)).join("") : `<div style="text-align:center; padding:20px; color:var(--text-dim);">কোনো কেস পাওয়া যায়নি।</div>`;
+    }
+
+    function openCaseDetail(id) {
+      currentCaseId = id;
+      const c = cases.find(x => x.id === id);
+      if (!c) return;
+
+      const cat = CATEGORIES.find(k => k.id === c.category) || CATEGORIES[0];
+      document.getElementById("dt-id").textContent = c.id;
+      document.getElementById("dt-cat").textContent = `${cat.icon} ${isBn ? cat.nameBn : cat.nameEn}`;
+      document.getElementById("dt-platform").textContent = `${c.platform} • Date: ${c.date || "N/A"}`;
+      document.getElementById("dt-url").textContent = c.url;
+      document.getElementById("dt-url").href = c.url.startsWith("http") ? c.url : `https://${c.url}`;
+      document.getElementById("dt-priority").textContent = c.priority;
+      document.getElementById("dt-priority").className = `badge badge-${c.priority.toLowerCase()}`;
+      document.getElementById("dt-status").textContent = c.status;
+      document.getElementById("dt-desc").textContent = c.description || "(কোনো বিবরণ নেই)";
+
+      // Evidence list
+      const evBox = document.getElementById("dt-ev-list");
+      evBox.innerHTML = (c.images || []).map((img, i) => `
+        <img src="${img.data}" class="ev-thumb" onclick="previewImage('${img.data}')" title="${img.name || 'Evidence'}">
+      `).join("") || `<div style="color:var(--text-dim); font-size:11px;">কোনো প্রমাণ যুক্ত নেই।</div>`;
+
+      // Timeline
+      const tBox = document.getElementById("dt-timeline");
+      tBox.innerHTML = (c.timeline || []).map(t => `
+        <div style="font-size:12px; margin-bottom:4px; padding-left:10px; border-left:2px solid var(--cyan);">
+          <b style="color:var(--accent);">[${t.date}]</b> ${t.title} <small style="color:var(--text-dim);">${t.desc || ""}</small>
+        </div>
+      `).join("");
+
+      showView("detail");
+    }
+
+    function handleAddMoreFiles(event) {
+      const c = cases.find(x => x.id === currentCaseId);
+      if (!c) return;
+      const files = [...event.target.files];
+      files.forEach(f => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          c.images = c.images || [];
+          c.images.push({ name: f.name, data: reader.result, time: Date.now() });
+          c.timeline.push({ date: new Date().toLocaleDateString(), title: `Evidence attached: ${f.name}` });
+          saveStore();
+          openCaseDetail(currentCaseId);
+        };
+        reader.readAsDataURL(f);
+      });
+    }
+
+    function cycleStatus() {
+      const c = cases.find(x => x.id === currentCaseId);
+      if (!c) return;
+      const statuses = ["Draft", "Evidence Collecting", "Ready to Report", "Report Submitted", "Resolved", "Rejected", "Closed"];
+      const nextIdx = (statuses.indexOf(c.status) + 1) % statuses.length;
+      c.status = statuses[nextIdx];
+      c.timeline.push({ date: new Date().toLocaleDateString(), title: `Status changed to ${c.status}` });
+      saveStore();
+      openCaseDetail(currentCaseId);
+    }
+
+    function deleteCurrentCase() {
+      if (confirm(isBn ? "এই কেসটি স্থায়ীভাবে মুছে ফেলতে চান?" : "Delete this case permanently?")) {
+        cases = cases.filter(x => x.id !== currentCaseId);
+        saveStore();
+        showView("cases");
+      }
+    }
+
+    // Reports Generation
+    function generateReportForCase() {
+      const c = cases.find(x => x.id === currentCaseId);
+      if (!c) return;
+      renderReportText(c);
+      showView("report");
+    }
+
+    function switchReportTab(lang) {
+      reportTab = lang;
+      document.getElementById("tab-bn-rep").className = `btn btn-sm ${lang==='bn'?'btn-cyan':''}`;
+      document.getElementById("tab-en-rep").className = `btn btn-sm ${lang==='en'?'btn-cyan':''}`;
+      const c = cases.find(x => x.id === currentCaseId);
+      if (c) renderReportText(c);
+    }
+
+    function renderReportText(c) {
+      const cat = CATEGORIES.find(k => k.id === c.category) || CATEGORIES[0];
+      const now = new Date().toLocaleString();
+      let text = "";
+
+      if (reportTab === "bn") {
+        text = `আইসিএস সাইবার রিপোর্ট প্রো (ICS CYBER REPORT PRO)
+অফিশিয়াল সাইবার ইনসিডেন্ট রিপোর্ট / অভিযোগের বিবরণ
+==================================================
+কেস আইডি: ${c.id}
+প্ল্যাটফর্ম: ${c.platform}
+অভিযোগের ধরন: ${cat.nameBn} (${cat.nameEn})
+অগ্রাধিকার: ${c.priority}
+বর্তমান অবস্থা: ${c.status}
+টার্গেট লিংক: ${c.url}
+ঘটনার তারিখ: ${c.date || "অনির্দিষ্ট"}
+প্রস্তুতের সময়: ${now}
+--------------------------------------------------
+
+১. ঘটনার বিস্তারিত বিবরণ (Incident Description):
+${c.description || "কোনো বিবরণ প্রদান করা হয়নি।"}
+
+২. সংগৃহীত প্রমাণের সারসংক্ষেপ (${(c.images||[]).length}টি আইটেম):
+${(c.images||[]).map((img, i) => `  [প্রমাণ #${i+1}] ${img.name || 'Screenshot'} (${new Date(img.time||Date.now()).toLocaleDateString()})`).join("\n") || "কোনো প্রমাণ সংযুক্ত নেই।"}
+
+৩. প্রার্থিত প্রতিকার (Requested Action):
+  ক. উল্লিখিত ভুয়া/ক্ষতিকর লিংক ও কন্টেন্ট অবিলম্বে অপসারণ বা নিষ্ক্রিয়করণ।
+  খ. সংশ্লিষ্ট অপরাধীর আইপি ও সার্ভার অ্যাক্সেস লগ আইনি তদন্তের স্বার্থে সংরক্ষণ।
+  গ. প্ল্যাটফর্মের নীতিমালা ও প্রচলিত আইন অনুযায়ী প্রয়োজনীয় কঠোর ব্যবস্থা গ্রহণ।
+
+ঘোষণা:
+এই রিপোর্টটি ব্যবহারকারীর সরবরাহকৃত বস্তুনিষ্ঠ প্রমাণের ভিত্তিতে তৈরি। এটি কোনো আদালত বা প্ল্যাটফর্মের চূড়ান্ত রায় নয়; আইনি প্রতিকার ও অফিশিয়াল অভিযোগ দাখিলের সহায়ক নথি।`;
+      } else {
+        text = `ICS CYBER REPORT PRO - OFFICIAL INCIDENT DOSSIER
+Confidential Incident Documentation & Abuse Report
+==================================================
+Case Reference ID: ${c.id}
+Target Platform:   ${c.platform}
+Violation Type:    ${cat.nameEn}
+Priority Level:    ${c.priority}
+Workflow Status:   ${c.status}
+Target URL/Handle: ${c.url}
+Incident Date:     ${c.date || "Recorded at submission"}
+Generated At:      ${now}
+--------------------------------------------------
+
+1. FACTUAL INCIDENT SUMMARY:
+${c.description || "No narrative recorded."}
+
+2. EVIDENCE VAULT (${(c.images||[]).length} Item(s)):
+${(c.images||[]).map((img, i) => `  Evidence #${i+1}: ${img.name || 'Screenshot'} [Preserved]`).join("\n") || "No digital attachments."}
+
+3. REQUESTED REMEDIES:
+  a. Immediate take-down / termination of the offending account, post, or link.
+  b. Preservation of access logs, IP identifiers, and transaction traces in accordance with Cyber Law.
+  c. Escalation to platform trust & safety review teams.
+
+DISCLAIMER:
+Generated via ICS Cyber Report Pro. Collates objective factual evidence provided by the complainant for official dispute resolution desks.`;
+      }
+
+      document.getElementById("report-content").textContent = text;
+    }
+
+    function copyReport() {
+      const text = document.getElementById("report-content").textContent;
+      navigator.clipboard?.writeText(text);
+      alert(isBn ? "রিপোর্ট ক্লিপবোর্ডে কপি করা হয়েছে!" : "Report copied to clipboard!");
+    }
+
+    function shareReport() {
+      const text = document.getElementById("report-content").textContent;
+      if (navigator.share) {
+        navigator.share({ title: `ICS Report ${currentCaseId}`, text: text });
+      } else {
+        copyReport();
+      }
+    }
+
+    function openPlatformOfficial() {
+      const c = cases.find(x => x.id === currentCaseId);
+      const portal = OFFICIAL_PORTALS.find(p => p.name.includes(c?.platform)) || OFFICIAL_PORTALS[0];
+      window.open(portal.url, "_blank");
+    }
+
+    // Vault
+    function renderVault() {
+      const allImages = cases.flatMap(c => (c.images || []).map(img => ({ caseId: c.id, ...img })));
+      document.getElementById("vault-count").textContent = `${allImages.length} Items`;
+      const grid = document.getElementById("vault-grid");
+      if (!allImages.length) {
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-dim);">কোনো প্রমাণ এখনো সংরক্ষিত নেই।</div>`;
+        return;
+      }
+      grid.innerHTML = allImages.map(img => `
+        <div style="background:#091626; border:1px solid var(--card-border); border-radius:10px; padding:6px; text-align:center;">
+          <img src="${img.data}" style="width:100%; height:90px; object-fit:cover; border-radius:6px; cursor:pointer;" onclick="previewImage('${img.data}')">
+          <small style="color:var(--cyan); font-weight:700; display:block; margin-top:4px;">${img.caseId}</small>
+        </div>
+      `).join("");
+    }
+
+    function previewImage(src) {
+      const w = window.open("");
+      w.document.write(`<body style="margin:0;background:#000;display:grid;place-items:center;height:100vh;"><img src="${src}" style="max-width:100%;max-height:100%;"></body>`);
+    }
+
+    // Official Portals
+    function renderOfficial() {
+      const box = document.getElementById("official-list");
+      box.innerHTML = OFFICIAL_PORTALS.map(p => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#091626; border:1px solid var(--card-border); border-radius:12px; margin-bottom:8px;">
+          <div>
+            <div style="font-weight:700; color:#fff;">${p.emoji} ${p.name}</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${p.descBn}</div>
+          </div>
+          <button class="btn btn-sm btn-cyan" onclick="window.open('${p.url}', '_blank')">Open Portal</button>
+        </div>
+      `).join("");
+    }
+
+    // Backup & Restore
+    function exportBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(cases, null, 2));
+      const a = document.createElement("a");
+      a.href = dataStr;
+      a.download = `ics-cyber-report-backup-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+    }
+
+    function importBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) {
+            cases = imported;
+            saveStore();
+            alert(isBn ? "ব্যাকআপ সফলভাবে রিস্টোর হয়েছে!" : "Backup restored successfully!");
+            showView("dashboard");
+          } else {
+            alert("Invalid backup JSON.");
+          }
+        } catch (_) { alert("Error parsing JSON file."); }
+      };
+      reader.readAsText(file);
+    }
+
+    function wipeData() {
+      if (confirm("সমস্ত লোকাল ডাটা কি স্থায়ীভাবে মুছে ফেলতে চান?")) {
+        cases = [];
+        saveStore();
+        showView("dashboard");
+      }
+    }
+
+    // PIN Security
+    function enterPin(digit) {
+      if (enteredPinStr.length < 4) {
+        enteredPinStr += digit;
+        updatePinDots();
+        if (enteredPinStr.length === 4) {
+          const savedPin = localStorage.getItem("ics_pin");
+          if (enteredPinStr === savedPin) {
+            document.getElementById("lock-screen").style.display = "none";
+            enteredPinStr = "";
+          } else {
+            alert("ভুল পিন কোড!");
+            clearPin();
+          }
+        }
+      }
+    }
+
+    function clearPin() {
+      enteredPinStr = "";
+      updatePinDots();
+    }
+
+    function updatePinDots() {
+      const dots = document.getElementById("pin-dots").children;
+      for (let i = 0; i < 4; i++) {
+        dots[i].style.background = i < enteredPinStr.length ? "var(--cyan)" : "transparent";
+      }
+    }
+
+    function savePin() {
+      const p = document.getElementById("cfg-pin").value.trim();
+      if (p.length === 4) {
+        localStorage.setItem("ics_pin", p);
+        alert("পিন সফলভাবে সেট হয়েছে!");
+        document.getElementById("cfg-pin").value = "";
+      } else {
+        alert("৪ সংখ্যার পিন দিন।");
+      }
+    }
+
+    function removePin() {
+      localStorage.removeItem("ics_pin");
+      alert("পিন অপসারণ করা হয়েছে।");
+    }
+
+    function checkLock() {
+      const p = localStorage.getItem("ics_pin");
+      if (p) {
+        document.getElementById("lock-screen").style.display = "flex";
+      }
+    }
+
+    // Language Toggle
+    function toggleLang() {
+      isBn = !isBn;
+      localStorage.setItem("ics_lang", isBn ? "bn" : "en");
+      document.getElementById("btn-lang").textContent = isBn ? "🇧🇩 বাংলা" : "🇬🇧 English";
+      catSelect.innerHTML = "";
+      CATEGORIES.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.textContent = `${c.icon} ${isBn ? c.nameBn : c.nameEn}`;
+        catSelect.appendChild(opt);
+      });
+      updateCatGuidance();
+      renderDashboard();
+    }
+
+    // Service Worker Registration for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log("ICS PWA Service Worker Registered"))
+        .catch(err => console.log("SW Reg Error:", err));
+    }
+
+    // Initial setup
+    renderDashboard();
+    checkLock();
+  </script>
+</body>
+</html>

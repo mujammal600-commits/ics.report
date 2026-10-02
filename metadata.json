@@ -1,0 +1,6 @@
+{
+  "name": "ICS Cyber Report Pro",
+  "description": "Professional cyber incident documentation, smart evidence analysis, and case reporting assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
